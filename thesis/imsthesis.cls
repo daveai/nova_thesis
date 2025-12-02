@@ -1,0 +1,104 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   MODIFIED FOR NATBIB     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{imsthesis}[2025/03/01 Nova IMS Thesis]
+
+% Create a macro to store options for imsoptions
+\def\imsoptionspkg{}
+\def\addtoimsoptions#1{\g@addto@macro\imsoptionspkg{,#1}}
+
+% Load the base class
+\LoadClass[
+  oneside,
+  openright,
+  parskip=full,
+  fontsize=12bp,
+  DIV=12,
+  toc=chapterentrydotfill,
+  numbers=enddot
+]{scrbook}
+
+\usepackage{scrhack}
+
+% Define a new command to set thesis options
+\newcommand{\setthesisoptions}[1]{
+  \usepackage[#1]{_setup/imsoptions}
+}
+
+\usepackage{_setup/imsstyles}
+\usepackage{_setup/imslocal}
+
+
+\usepackage[
+    a4paper,
+    margin=.98in
+]{geometry}
+
+\geometry{
+  footskip=4ex
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Bibliography - Using natbib instead of biblatex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[round,authoryear]{natbib}
+\bibliographystyle{apalike}
+
+% Define biblatex-style commands for natbib compatibility
+\newcommand{\addbibresource}[1]{\def\bibfile{#1}}
+\newcommand{\textcite}[1]{\citet{#1}}
+\newcommand{\parencite}[1]{\citep{#1}}
+\newcommand{\printbibliography}{\bibliography{\bibfile}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\usepackage[hidelinks]{hyperref}
+
+
+
+\usepackage{booktabs}
+%\usepackage{siunitx}  % Removed - not available in minimal install
+
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Colors
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\RequirePackage[]{xcolor}
+\definecolor{frontgrey}{HTML}{5c666c}
+\definecolor{frontgreylight}{HTML}{AEB3B2}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Images
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% IMS Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\RequirePackage{_setup/imscommands}
+
+\RequirePackage{_setup/imspages}
+
+

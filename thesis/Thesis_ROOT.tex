@@ -1,0 +1,54 @@
+\documentclass{imsthesis}
+
+% Set thesis options using the new command
+\setthesisoptions{
+  author={Davide Montali},
+  title={Comparing Econometric and Machine Learning Approaches to Volatility Forecasting},
+  subtitle={Evidence from Cryptocurrency and Traditional Markets},
+  supervisor={Professor Fernando Bacao, NOVA IMS},
+  programacronym={MDSAA},
+  programfullname={Data Science and Advanced Analytics},
+  programspecialization={Data Science},
+  keywords={Volatility Forecasting; GARCH; Machine Learning; LSTM; Cryptocurrency; Risk Management},
+  language={EN},
+  build={pdflatex},
+  date={06-01-2026}, % DD-MM-YYYY format
+  draft=false,
+  worktype={Master Thesis}
+}
+
+\addbibresource{Bibliography/references.bib}
+
+\imspreamble
+
+{}
+
+\begin{document}
+
+\frontmatter
+
+\imspagecover
+
+\imspagetitle
+
+\imspagefront
+
+\input{Contents/0_FrontChapters}
+
+\imspagetoc
+
+\imspagecontent
+
+\mainmatter
+
+\input{Contents/1_MainChapters}
+
+\backmatter
+
+\imspagebib
+
+\input{Contents/2_BackChapters}
+
+\imspageback
+
+\end{document}
