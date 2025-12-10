@@ -1,0 +1,43 @@
+\chapter{Introduction}
+
+\section{Background and Motivation}
+
+Financial markets do not sit still. The COVID-19 pandemic made this abundantly clear: volatility spiked across equities and cryptocurrencies alike, catching many risk models off guard. For practitioners managing portfolios or pricing options, these swings were not abstract. They carried real costs.
+
+Predicting volatility has long been central to quantitative finance. Accurate forecasts enable effective hedging, fair derivative pricing, and sensible position sizing. Poor forecasts, by contrast, can lead to substantial losses. Since \textcite{engle1982} introduced the ARCH model and \textcite{bollerslev1986} extended it to GARCH, these econometric frameworks have been the go-to approach for modelling how volatility evolves over time. They remain popular for good reason: the parameters are interpretable, estimation is straightforward, and decades of research have refined their use.
+
+Two developments over the past decade have begun to complicate this picture. First, cryptocurrencies arrived. Bitcoin and Ethereum now command market capitalisations in the hundreds of billions, yet they appear to behave quite differently from traditional equities. They trade around the clock, experience substantial price swings, and seem prone to sudden regime shifts that may leave standard models struggling. Second, machine learning has matured. Techniques such as LSTMs, Random Forests, and gradient boosting have demonstrated strong performance in other forecasting domains, prompting a natural question: might they perform better for volatility as well?
+
+\section{Research Problem}
+
+There appears to be a genuine trade-off between models that are easy to interpret and models that may be more accurate. GARCH parameters have clear economic meaning: they capture the persistence of shocks, the response to news, and asymmetric effects. Regulators often prefer this transparency. Traders, however, tend to focus on whether forecasts are correct. If a neural network produces better predictions, the opacity may represent an acceptable cost.
+
+Machine learning approaches can, in principle, capture nonlinear patterns without requiring the analyst to specify them in advance. This flexibility is appealing. It also comes with potential costs: these models can be harder to interpret, may require more data, and can overfit in ways that only become apparent out of sample. The question this thesis attempts to address is straightforward: \textbf{when, if ever, does the added complexity of machine learning pay off for volatility forecasting?}
+
+\section{Research Objectives}
+
+To address this question, this thesis compares forecasting performance across four assets (Bitcoin, Ethereum, the S\&P 500, and VIX) using a consistent methodology throughout. This cross-asset design is important. Much of the existing literature examines either crypto or traditional markets, but rarely both together. By holding the methods fixed and varying the assets, it becomes possible to assess whether any machine learning advantage may be specific to certain market conditions.
+
+The analysis also examines a range of model complexity, from GARCH through Random Forest to LSTM. The goal is not to declare a single winner but to understand where on the interpretability-flexibility spectrum different approaches may excel. Rather than simply ranking models by RMSE, Diebold-Mariano tests are employed to assess whether observed differences are statistically meaningful or may reflect sampling variation.
+
+\section{Research Questions}
+
+With that framing, this thesis addresses three questions:
+
+\begin{itemize}
+    \item \textbf{RQ1}: Do machine learning methods actually outperform GARCH-family models for cryptocurrency volatility, or is the apparent advantage overstated?
+
+    \item \textbf{RQ2}: If there is an ML advantage in crypto markets, does it carry over to traditional equities, or does it disappear?
+
+    \item \textbf{RQ3}: Among the machine learning approaches, do the more complex models (like LSTM) genuinely beat simpler ones (like Random Forest), or is simpler sometimes better?
+\end{itemize}
+
+\section{Contributions}
+
+Several aspects distinguish this work from existing studies. Most papers focus on either cryptocurrencies or equities; this thesis examines both under identical conditions, which permits direct comparison. The range of models (from interpretable GARCH to opaque LSTM) may help clarify when complexity adds value and when it merely adds computation time. The statistical tests move beyond raw accuracy metrics to assess whether differences are likely to be genuine.
+
+Perhaps the most notable finding is that model performance varies substantially across assets. LSTM achieves the strongest results for the S\&P 500, while machine learning methods collectively outperform GARCH for Bitcoin but not Ethereum. This pattern suggests that blanket recommendations may be overly simplistic; asset-specific evaluation appears necessary.
+
+\section{Thesis Structure}
+
+The remainder of this thesis is organised as follows. Chapter 2 reviews the relevant literature on volatility forecasting, covering both econometric and machine learning approaches. Chapter 3 describes the data, model specifications, and evaluation framework in detail. Chapter 4 presents the results and discusses their implications. Chapter 5 concludes with a summary of findings, limitations, and directions for future research.
