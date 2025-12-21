@@ -1,0 +1,218 @@
+\chapter{Methodology}
+
+This chapter describes the methodological framework: data sources, model specifications, and forecast evaluation procedures. The aim is to provide sufficient detail that the analysis could, in principle, be replicated.
+
+\section{Data}
+
+\subsection{Data Sources}
+
+The analysis uses daily price data for four assets, selected to span both cryptocurrency and traditional markets:
+
+\begin{itemize}
+    \item \textbf{Bitcoin (BTC)}: The original and still the largest cryptocurrency by market cap. It is the obvious starting point for any crypto analysis.
+    \item \textbf{Ethereum (ETH)}: The second-largest cryptocurrency. Its inclusion permits assessment of whether Bitcoin results generalise within the crypto space.
+    \item \textbf{S\&P 500 Index (SPX)}: The standard U.S. equity benchmark. It provides a well-behaved comparison case.
+    \item \textbf{CBOE Volatility Index (VIX)}: Sometimes called the ``fear index.'' It measures implied volatility on S\&P 500 options and behaves quite differently from the underlying index.
+\end{itemize}
+
+Cryptocurrency data comes from Polygon.io, which offers institutional-quality market data. Traditional asset data is from Yahoo Finance: convenient, widely used, and free. The sample runs from January 2019 through December 2025, giving roughly seven years of daily observations. For cryptocurrencies, that means data every day; for equities and VIX, trading days only.
+
+\subsection{Data Preprocessing}
+
+Log returns are computed in the standard manner:
+
+\begin{equation}
+    r_t = \ln\left(\frac{P_t}{P_{t-1}}\right)
+    \label{eq:returns}
+\end{equation}
+
+where $P_t$ is the closing price on day $t$. Log returns are convenient because they add across time and tend to be closer to normally distributed than simple returns, though ``closer'' is doing a lot of work here. These series still have fat tails.
+
+Realised volatility over a rolling window of $w$ days is defined as:
+
+\begin{equation}
+    RV_t^{(w)} = \sqrt{\frac{252}{w} \sum_{i=0}^{w-1} r_{t-i}^2}
+    \label{eq:rv}
+\end{equation}
+
+The 252 factor annualises the measure, assuming 252 trading days per year. This study uses $w = 21$ days (approximately one trading month) as the primary target, with 5-day and 10-day windows serving as additional features for the machine learning models.
+
+\subsection{Descriptive Statistics}
+
+Table \ref{tab:descriptive} summarises the daily returns for each asset.
+
+\begin{table}[htbp]
+\centering
+\caption{Descriptive Statistics of Daily Log Returns (2019--2025)}
+\label{tab:descriptive}
+\begin{tabular}{lcccccc}
+\toprule
+Asset & Obs. & Mean (\%) & Std. (\%) & Skewness & Kurtosis & Ann. Vol. (\%) \\
+\midrule
+BTC & 2,557 & 0.10 & 3.38 & -0.58 & 9.12 & 53.7 \\
+ETH & 2,557 & 0.11 & 4.21 & -0.28 & 7.45 & 66.8 \\
+SPX & 1,759 & 0.05 & 1.15 & -0.85 & 14.38 & 18.3 \\
+VIX & 1,759 & 0.01 & 6.75 & 1.28 & 10.02 & 107.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A few things jump out. Cryptocurrencies are volatile (no surprise there), with annualised volatility around three to four times that of the S\&P 500. All four series show fat tails (kurtosis well above 3) and skewness. Equity returns are negatively skewed, consistent with the leverage effect; VIX is positively skewed, reflecting its tendency to spike during crises. The VIX itself has extremely high volatility, which is worth keeping in mind when interpreting the results for that asset.
+
+\section{Model Specifications}
+
+\subsection{GARCH(1,1)}
+
+The workhorse GARCH(1,1) model specifies:
+
+\begin{equation}
+    r_t = \mu + \epsilon_t, \quad \epsilon_t = \sigma_t z_t, \quad z_t \sim N(0,1)
+\end{equation}
+
+\begin{equation}
+    \sigma_t^2 = \omega + \alpha \epsilon_{t-1}^2 + \beta \sigma_{t-1}^2
+    \label{eq:garch11}
+\end{equation}
+
+The constraints $\omega > 0$, $\alpha \geq 0$, $\beta \geq 0$, and $\alpha + \beta < 1$ ensure positivity and stationarity. The $\alpha$ parameter captures how yesterday's shock feeds into today's variance; $\beta$ measures how persistent volatility is on its own. When $\alpha + \beta$ is close to one, shocks decay slowly. Volatility clusters.
+
+The model is estimated via quasi-maximum likelihood assuming normality. This approach yields consistent estimates even when the actual distribution has fatter tails, as is typically the case with financial returns.
+
+\subsection{EGARCH(1,1)}
+
+The Exponential GARCH model \parencite{nelson1991} works with the log of variance:
+
+\begin{equation}
+    \ln(\sigma_t^2) = \omega + \alpha \left| \frac{\epsilon_{t-1}}{\sigma_{t-1}} \right| + \gamma \frac{\epsilon_{t-1}}{\sigma_{t-1}} + \beta \ln(\sigma_{t-1}^2)
+    \label{eq:egarch11}
+\end{equation}
+
+The $\gamma$ term is the key addition. If $\gamma$ is negative, bad news raises volatility more than good news of the same size, the leverage effect. This asymmetry is well documented in equity markets, though as noted earlier, it may run the other way in crypto.
+
+\subsection{Random Forest}
+
+Random Forest \parencite{breiman2001} builds an ensemble of decision trees and averages their predictions:
+
+\begin{equation}
+    \hat{y} = \frac{1}{B} \sum_{b=1}^{B} T_b(\mathbf{x})
+\end{equation}
+
+where $B$ is the number of trees and $T_b(\mathbf{x})$ is the prediction of tree $b$ given features $\mathbf{x}$.
+
+Each tree is trained on a bootstrap sample, and at each split only a random subset of features is considered. This randomisation tends to reduce overfitting. The analysis employs standard hyperparameters: 100 trees, maximum depth of 10, and a minimum of 5 samples per split. No extensive tuning was performed; the objective is to assess how a reasonable off-the-shelf configuration performs.
+
+\subsection{XGBoost}
+
+XGBoost \parencite{chen2016} also builds an ensemble of trees, but sequentially: each new tree tries to correct the errors of the ones before it. The objective function includes a regularisation term:
+
+\begin{equation}
+    \mathcal{L} = \sum_{i=1}^{n} l(y_i, \hat{y}_i) + \sum_{k=1}^{K} \Omega(f_k)
+\end{equation}
+
+where $l$ is the loss and $\Omega(f_k)$ penalises complexity. This helps prevent overfitting, which matters because boosting can otherwise memorise training data.
+
+Configuration: 100 estimators, max depth 6, learning rate 0.1. Again, nothing exotic.
+
+\subsection{LSTM Neural Network}
+
+LSTMs \parencite{hochreiter1997} are recurrent networks with gating mechanisms that control information flow:
+
+\begin{align}
+    f_t &= \sigma(W_f \cdot [h_{t-1}, x_t] + b_f) \quad \text{(forget gate)} \\
+    i_t &= \sigma(W_i \cdot [h_{t-1}, x_t] + b_i) \quad \text{(input gate)} \\
+    \tilde{C}_t &= \tanh(W_C \cdot [h_{t-1}, x_t] + b_C) \quad \text{(candidate state)} \\
+    C_t &= f_t \odot C_{t-1} + i_t \odot \tilde{C}_t \quad \text{(cell update)} \\
+    o_t &= \sigma(W_o \cdot [h_{t-1}, x_t] + b_o) \quad \text{(output gate)} \\
+    h_t &= o_t \odot \tanh(C_t) \quad \text{(hidden state)}
+\end{align}
+
+The gates let the network decide what to remember and what to forget over potentially long sequences.
+
+The architecture is deliberately kept moderate:
+
+\begin{itemize}
+    \item Two LSTM layers with 64 and 32 units respectively
+    \item Batch normalisation after each LSTM layer
+    \item Dropout (rate 0.15) for regularisation
+    \item A dense layer with 16 units and ReLU activation
+    \item Final output layer with one unit (the volatility forecast)
+\end{itemize}
+
+The model uses a lookback window of 30 trading days, the Adam optimiser with learning rate 0.001, and early stopping with patience of 25 epochs. The final 10\% of training data serves as a validation set. This configuration is fairly standard for financial time series: not extensively optimised, but reasonable.
+
+\subsection{Feature Engineering for ML Models}
+
+The machine learning models (Random Forest, XGBoost, LSTM) use the following features:
+
+\begin{itemize}
+    \item Lagged returns: $r_{t-1}, r_{t-2}, \ldots, r_{t-22}$ (roughly a trading month of history)
+    \item Realised volatility at different horizons: 5-day, 10-day, and 21-day rolling windows
+    \item Lagged volatility: $RV_{t-1}$ through $RV_{t-5}$
+\end{itemize}
+
+For LSTM, all features are standardised to have zero mean and unit variance. This helps with training stability.
+
+\section{Experimental Design}
+
+\subsection{Training and Testing}
+
+The analysis employs a straightforward out-of-sample framework. For each asset:
+
+\begin{enumerate}
+    \item Split the data 80/20 into training and test periods.
+    \item For GARCH models, use rolling one-step-ahead forecasts. At each test point, re-estimate the model on all data up to that point and forecast the next day.
+    \item For ML models, train once on the training set and generate forecasts for the entire test period.
+\end{enumerate}
+
+This gives GARCH a potential advantage (it gets to update its parameters as new data arrives) while ML models are frozen after training. The tradeoff is that GARCH refitting is more computationally intensive.
+
+The target variable is 5-day forward realised volatility, consistent across all models.
+
+\subsection{Reproducibility}
+
+Random seeds are fixed throughout:
+
+\begin{itemize}
+    \item NumPy: 42
+    \item TensorFlow: 42
+    \item Scikit-learn models use fixed random states
+\end{itemize}
+
+This should, in principle, allow exact replication of the results.
+
+\section{Evaluation Metrics}
+
+Forecasts are evaluated using three standard metrics:
+
+\textbf{Root Mean Squared Error (RMSE):}
+\begin{equation}
+    \text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} (\hat{\sigma}_t - \sigma_t)^2}
+\end{equation}
+
+\textbf{Mean Absolute Error (MAE):}
+\begin{equation}
+    \text{MAE} = \frac{1}{n} \sum_{t=1}^{n} |\hat{\sigma}_t - \sigma_t|
+\end{equation}
+
+\textbf{Mean Absolute Percentage Error (MAPE):}
+\begin{equation}
+    \text{MAPE} = \frac{100}{n} \sum_{t=1}^{n} \left| \frac{\hat{\sigma}_t - \sigma_t}{\sigma_t} \right|
+\end{equation}
+
+RMSE is the primary metric. It penalises large errors heavily, which matters in practice: underestimating a volatility spike can be far more costly than being slightly off during calm periods.
+
+\subsection{Statistical Testing}
+
+Raw error metrics can be misleading: what appears to be a meaningful difference may simply reflect sampling variation. To address this, the Diebold-Mariano test \parencite{diebold1995} is employed. The null hypothesis is that two forecasts have equal accuracy:
+
+\begin{equation}
+    H_0: E[d_t] = 0 \quad \text{where} \quad d_t = e_{1,t}^2 - e_{2,t}^2
+\end{equation}
+
+The test statistic is:
+
+\begin{equation}
+    DM = \frac{\bar{d}}{\sqrt{\hat{V}(\bar{d})}} \sim N(0,1)
+\end{equation}
+
+A significantly positive DM statistic means the second model beats the first; negative means the first is better. This provides some discipline beyond just eyeballing RMSE rankings.
