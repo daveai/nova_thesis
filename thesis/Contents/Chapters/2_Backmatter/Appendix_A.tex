@@ -1,0 +1,157 @@
+\chapter{Supplementary Results}
+
+\annotapx{A}
+
+This appendix provides additional results to complement the main analysis, including alternative error metrics, model hyperparameters, and extended Diebold-Mariano test results.
+
+\section{Alternative Error Metrics}
+
+Table \ref{tab:mae_results} presents the Mean Absolute Error (MAE) for all model-asset combinations, providing a complementary view to the RMSE results reported in the main text.
+
+\begin{table}[htbp]
+\centering
+\caption{Out-of-Sample Forecasting Performance (MAE)}
+\label{tab:mae_results}
+\begin{tabular}{lccccc}
+\toprule
+Asset & GARCH(1,1) & EGARCH & Random Forest & XGBoost & LSTM \\
+\midrule
+BTC & 0.1781 & 0.1796 & 0.1454 & 0.1490 & \textbf{0.1304} \\
+ETH & 0.2511 & \textbf{0.2470} & 0.2386 & 0.2428 & 0.2614 \\
+SPX & 0.0855 & 0.0813 & \textbf{0.0694} & 0.0711 & 0.0747 \\
+VIX & 0.6603 & 0.6357 & \textbf{0.4876} & 0.5463 & 0.5688 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Note: Bold values indicate the best performing model for each asset.
+\item MAE values are on annualized volatility scale (decimal form).
+\end{tablenotes}
+\end{table}
+
+Table \ref{tab:mape_results} presents the Mean Absolute Percentage Error (MAPE), which provides a scale-independent measure of forecasting accuracy.
+
+\begin{table}[htbp]
+\centering
+\caption{Out-of-Sample Forecasting Performance (MAPE, \%)}
+\label{tab:mape_results}
+\begin{tabular}{lccccc}
+\toprule
+Asset & GARCH(1,1) & EGARCH & Random Forest & XGBoost & LSTM \\
+\midrule
+BTC & 81.2 & 82.5 & 64.3 & 63.9 & \textbf{50.2} \\
+ETH & 69.3 & 69.3 & \textbf{62.4} & 61.8 & 54.9 \\
+SPX & 85.7 & 82.2 & 60.0 & 62.4 & \textbf{57.8} \\
+VIX & 74.9 & 72.0 & \textbf{50.9} & 56.2 & 47.6 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Note: Bold values indicate the best performing model for each asset.
+\end{tablenotes}
+\end{table}
+
+The MAE and MAPE results are broadly consistent with the RMSE findings: LSTM achieves the best MAE and MAPE for Bitcoin, while EGARCH and tree-based methods perform well for other assets. LSTM achieves the lowest MAPE across multiple assets, suggesting it may be particularly good at proportional accuracy even when RMSE is higher.
+
+\section{Model Hyperparameters}
+
+Table \ref{tab:hyperparameters} summarizes the hyperparameters used for each model. These represent standard configurations without extensive tuning, consistent with our focus on practical deployability.
+
+\begin{table}[htbp]
+\centering
+\caption{Model Hyperparameters}
+\label{tab:hyperparameters}
+\begin{tabular}{llp{8cm}}
+\toprule
+Model & Parameter & Value \\
+\midrule
+\multirow{3}{*}{GARCH(1,1)} & Distribution & Normal \\
+ & Mean model & Constant \\
+ & Estimation & Quasi-MLE \\
+\midrule
+\multirow{3}{*}{EGARCH(1,1)} & Distribution & Normal \\
+ & Mean model & Constant \\
+ & Estimation & Quasi-MLE \\
+\midrule
+\multirow{4}{*}{Random Forest} & n\_estimators & 100 \\
+ & max\_depth & 10 \\
+ & min\_samples\_split & 5 \\
+ & random\_state & 42 \\
+\midrule
+\multirow{4}{*}{XGBoost} & n\_estimators & 100 \\
+ & max\_depth & 6 \\
+ & learning\_rate & 0.1 \\
+ & random\_state & 42 \\
+\midrule
+\multirow{8}{*}{LSTM} & LSTM layers & 2 (stacked) \\
+ & LSTM units & 64, 32 \\
+ & Batch normalization & After each LSTM layer \\
+ & Dropout rate & 0.15 \\
+ & Dense units & 16 \\
+ & Lookback window & 30 days \\
+ & Optimizer & Adam (lr=0.001) \\
+ & Early stopping patience & 25 epochs \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Extended Diebold-Mariano Test Results}
+
+Table \ref{tab:dm_extended} provides the full Diebold-Mariano test statistics (not just significance levels) for key model comparisons.
+
+\begin{table}[htbp]
+\centering
+\caption{Diebold-Mariano Test Statistics (Full Results)}
+\label{tab:dm_extended}
+\begin{tabular}{lcccc}
+\toprule
+Comparison & BTC & ETH & SPX & VIX \\
+\midrule
+RF vs GARCH & $-2.82^{***}$ & 0.98 & $-0.18$ & $-3.60^{***}$ \\
+XGBoost vs GARCH & $-4.47^{***}$ & 1.60 & $-0.75$ & $-2.11^{**}$ \\
+EGARCH vs GARCH & $1.65^{*}$ & $-2.35^{**}$ & $-3.97^{***}$ & $-3.13^{***}$ \\
+LSTM vs GARCH & $-4.24^{***}$ & $3.09^{***}$ & $-3.90^{***}$ & $-1.44$ \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Note: *** p<0.01, ** p<0.05, * p<0.10.
+\item Negative values indicate the first model outperforms the second.
+\item Test conducted using squared error loss differential.
+\end{tablenotes}
+\end{table}
+
+Key observations from the extended results:
+\begin{itemize}
+    \item For BTC, all ML methods significantly outperform GARCH, with XGBoost showing the strongest improvement (DM = $-4.47$).
+    \item For ETH, LSTM significantly \textit{underperforms} GARCH (DM = $3.09$), while EGARCH significantly outperforms GARCH (DM = $-2.35$).
+    \item For SPX, LSTM significantly outperforms GARCH (DM = $-3.90$), as does EGARCH (DM = $-3.97$). Tree-based methods show no significant improvement.
+    \item For VIX, RF and XGBoost significantly outperform GARCH, but LSTM shows no significant difference.
+\end{itemize}
+
+\section{Feature Set Description}
+
+Table \ref{tab:features} lists all features used in the machine learning models.
+
+\begin{table}[htbp]
+\centering
+\caption{Feature Set for Machine Learning Models}
+\label{tab:features}
+\begin{tabular}{lp{10cm}}
+\toprule
+Feature Group & Variables \\
+\midrule
+Lagged Returns & $r_{t-1}, r_{t-2}, \ldots, r_{t-22}$ (22 features) \\
+\midrule
+Realized Volatility & rv\_5 (5-day), rv\_10 (10-day), rv\_21 (21-day) \\
+\midrule
+Lagged Volatility & rv\_lag\_1, rv\_lag\_2, rv\_lag\_3, rv\_lag\_4, rv\_lag\_5 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Note: All features are constructed using only information available at time $t-1$ to avoid lookahead bias.
+\item LSTM models use standardized features (zero mean, unit variance).
+\end{tablenotes}
+\end{table}
+
