@@ -1,0 +1,17 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Can machine learning methods outperform traditional econometric models for volatility forecasting? The answer, this thesis finds, depends on the specific asset under consideration.
+
+This thesis compares GARCH, EGARCH, Random Forest, XGBoost, and LSTM models using daily data from 2019 to 2025 for Bitcoin, Ethereum, the S\&P 500, and VIX. Performance is measured out-of-sample via RMSE, with Diebold-Mariano tests employed to assess whether observed differences are statistically significant.
+
+The results prove more nuanced than a simple ``ML wins'' or ``stick with GARCH'' conclusion would suggest. For the S\&P 500, LSTM achieves the strongest performance: a 17\% RMSE improvement over GARCH that is statistically significant (p<0.01). This finding suggests that neural networks may capture patterns in equity volatility that traditional models do not.
+
+For Bitcoin, all machine learning methods significantly outperform GARCH, with XGBoost achieving the lowest RMSE. But for Ethereum, machine learning offers no improvement; EGARCH performs best. Same asset class. Different outcomes.
+
+From a practical standpoint, the 17\% RMSE reduction for equities could meaningfully affect risk management and position sizing decisions. For Bitcoin, the 11\% improvement from machine learning methods may similarly carry practical significance. For Ethereum, the additional model complexity appears to offer no benefit.
+
+The findings suggest that model selection needs to be asset-specific and validated through statistical testing rather than RMSE rankings alone. Deep learning neither ``always works'' nor ``never works'' for volatility. It depends on the asset.
+
+% This line shows the Keywords
+\imspagekeyws
