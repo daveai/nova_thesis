@@ -1,0 +1,16 @@
+
+\begin{table}[htbp]
+\centering
+\caption{Out-of-Sample Forecasting Performance (RMSE)}
+\label{tab:results}
+\begin{tabular}{lccccc}
+\toprule
+Asset & GARCH(1,1) & EGARCH & Random Forest & XGBoost & LSTM \\
+\midrule
+BTC & 0.2204 & 0.2202 & 0.1998 & 0.1984 & 0.2519 \\
+ETH & 0.2751 & 0.2637 & 0.2649 & 0.2594 & 0.3863 \\
+SPX & 0.0611 & 0.0614 & 0.0544 & 0.0566 & 0.0633 \\
+VIX & 0.9083 & 0.8806 & 0.8311 & 0.8725 & 0.9449 \\
+\bottomrule
+\end{tabular}
+\end{table}

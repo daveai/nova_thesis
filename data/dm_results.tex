@@ -1,0 +1,22 @@
+
+\begin{table}[htbp]
+\centering
+\caption{Diebold-Mariano Test Results for Forecast Comparison}
+\label{tab:dm_test}
+\begin{tabular}{lcccc}
+\toprule
+Comparison & BTC & ETH & SPX & VIX \\
+\midrule
+RF vs GARCH & * & ns & ** & ns \\
+XGBoost vs GARCH & *** & ns & ns & ns \\
+EGARCH vs GARCH & ns & * & ns & ns \\
+XGBoost vs RF & ns & ns & ns & ** \\
+LSTM vs GARCH & ns & *** & ns & ns \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item Note: *** p<0.01, ** p<0.05, * p<0.10, ns = not significant.
+\item Positive DM statistic indicates the first model outperforms the second.
+\end{tablenotes}
+\end{table}
