@@ -48,45 +48,15 @@
 
     \begin{tikzpicture}[remember picture,overlay]
 
-        % Check if cover PDF exists, otherwise use background image directly
-        \IfFileExists{\imsFrontPath{\paperprogramacronym}{\paperlanguage}}{
-            \node[inner sep=0pt] at (current page.center){
-                \includegraphics[
-                    width=\paperwidth,
-                    height=\paperheight
-                ]{\imsFrontPath{\paperprogramacronym}{\paperlanguage}}
-            };
-        }{
-            \node[inner sep=0pt] at (current page.center){
-                \includegraphics[
-                    width=\paperwidth,
-                    height=\paperheight
-                ]{_setup/_images/FrontCoverBG.png}
-            };
 
-            % Program acronym (large)
-            {\fontsize{140}{120}\selectfont
-            \node[align=center] (programacronym) at ($(current page.center)+(0.65cm,6.95cm)$){
-                \textcolor{frontgrey}{\textbf{\paperprogramacronym}}
-            };
-            }
+        \node[inner sep=0pt] at (current page.center){
+            \includegraphics[
+                width=\paperwidth,
+                height=\paperheight
+            ]{\imsFrontPath{\paperprogramacronym}{\paperlanguage}}
+        };
 
-            % "Master Degree Program in"
-            {\fontsize{18}{20}\selectfont
-            \node[align=center] (msin) at ($(current page.center)+(0.05cm,3.3cm)$){
-                \textcolor{frontgrey}{\imsexpandterm{msin}{\paperlanguage}}
-            };
-            }
-
-            % Program full name
-            {\fontsize{18}{20}\selectfont
-            \node[align=center] (programfullname) at ($(current page.center)+(0.05cm,2.05cm)$){
-                \textcolor{frontgrey}{\textbf{\paperprogramfullname}}
-            };
-            }
-        }
-
-        { \fontsize{17}{24}\selectfont
+        { \fontsize{17}{17}\selectfont
         \node[
             align=flush center,
             anchor=north,
@@ -100,7 +70,7 @@
             align=flush center,
             anchor=north,
             below of = Title2,
-            yshift=-20pt,
+            yshift=6pt,
             text width=18cm
         ] (subtitle) {\textcolor{frontgreylight}{\papersubtitle}};
         }
@@ -149,7 +119,7 @@
 
             \vspace{76pt}
 
-            \fontsize{12}{18}\selectfont%
+            \fontsize{12}{-8}\selectfont%
 
             {%\setstretch{1.15}
                 {\textbf{\imsMakeUpper{\papertitle}}}}
@@ -183,7 +153,7 @@
                 { \fontsize{14}{14} \selectfont
                     \node[
                         align=center,
-                        % draw, 
+                        % draw,
                         text width=\textwidth
                     ] (supervisedby) at ($(current page.center)+(0cm,-3cm)$){
                         {\textbf{\imsexpandterm{supby}{\paperlanguage}}}
@@ -274,7 +244,7 @@
         \centering
 
         {\ifEnglish{\chapter*{Keywords}}{\chapter*{Palavras-Chave}}}
-        
+
         \paperkeywords
     }%
     \endgroup
@@ -311,9 +281,7 @@
 
     \newcommand{\imsbibtitle}{\ifEnglish{Bibliographical References}{Referéncias Bibliográficas}}
 
-    \renewcommand{\bibname}{\imsbibtitle}
-    \addcontentsline{toc}{chapter}{\imsbibtitle}
-    \bibliography{Bibliography/references}
+    \printbibliography[heading=bibintoc, title=\imsbibtitle]
 
 }
 

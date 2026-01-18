@@ -46,7 +46,7 @@
 \ifdefempty{\paper@subtitle}{\paper@hassubtitlefalse}{\paper@hassubtitletrue}
 
 
-% Getter commands 
+% Getter commands
 \newcommand*{\paperauthor}{\paper@author}
 \newcommand*{\papertitle}{\paper@title}
 \newcommand*{\papersubtitle}{\paper@subtitle}
@@ -95,7 +95,7 @@
     }{
       {\large\textbf{Objetivos do Desenvolvimento Sustentável (ODS):}}%
     }
-    
+
     \begin{figure}[h!]%
       \foreach \sdg in \paper@sdgvalues {%
         \ifnum\sdg<10 %
@@ -118,20 +118,32 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \RequirePackage[T1]{fontenc}
   \RequirePackage{fontspec}
-  \newfontfamily{\arial}{Arial}  
+  \newfontfamily{\arial}{Arial}
   \newfontfamily{\calibri}{Calibri}[LetterSpace=-1.75, Kerning=On, Ligatures=NoCommon]
   \newfontfamily{\calibribold}{Calibri Bold}[
-      Kerning=Off, 
+      Kerning=Off,
       Ligatures=NoCommon]
   \setmainfont{Calibri}
   \setsansfont{Calibri}
   }{
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% pdfLaTeX (non-LuaLaTeX)
+%% LuaLaTeX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  % Use Helvetica as a fallback for Arial
-  \newcommand{\arial}{\fontfamily{phv}\selectfont}
-  % Use default Computer Modern or Helvetica
+  % Set up Arial separately for the \arial command
+  \IfFileExists{uarial.sty}{
+    \RequirePackage{uarial}
+    \newcommand{\arial}{\fontfamily{ua1}\selectfont}
+  }{
+    \IfFileExists{arial.sty}{
+      \RequirePackage{arial}
+      \newcommand{\arial}{\fontfamily{arial}\selectfont}
+    }{
+      % If Arial is not available, define \arial to use Helvetica (similar to Arial)
+      \newcommand{\arial}{\fontfamily{phv}\selectfont}
+    }
+  }
+  % Try to use carlito with pdflatex if available
+  \RequirePackage{carlito}
   \renewcommand{\familydefault}{\sfdefault}
 }
 
