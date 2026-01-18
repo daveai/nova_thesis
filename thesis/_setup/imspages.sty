@@ -48,13 +48,22 @@
 
     \begin{tikzpicture}[remember picture,overlay]
 
-
-        \node[inner sep=0pt] at (current page.center){
-            \includegraphics[
-                width=\paperwidth,
-                height=\paperheight
-            ]{\imsFrontPath{\paperprogramacronym}{\paperlanguage}}
-        };
+        % Check if cover PDF exists, otherwise use background image directly
+        \IfFileExists{\imsFrontPath{\paperprogramacronym}{\paperlanguage}}{
+            \node[inner sep=0pt] at (current page.center){
+                \includegraphics[
+                    width=\paperwidth,
+                    height=\paperheight
+                ]{\imsFrontPath{\paperprogramacronym}{\paperlanguage}}
+            };
+        }{
+            \node[inner sep=0pt] at (current page.center){
+                \includegraphics[
+                    width=\paperwidth,
+                    height=\paperheight
+                ]{_setup/_images/FrontCoverBG.png}
+            };
+        }
 
         { \fontsize{17}{24}\selectfont
         \node[
