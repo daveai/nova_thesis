@@ -63,6 +63,27 @@
                     height=\paperheight
                 ]{_setup/_images/FrontCoverBG.png}
             };
+
+            % Program acronym (large)
+            {\fontsize{140}{120}\selectfont
+            \node[align=center] (programacronym) at ($(current page.center)+(0.65cm,6.95cm)$){
+                \textcolor{frontgrey}{\textbf{\paperprogramacronym}}
+            };
+            }
+
+            % "Master Degree Program in"
+            {\fontsize{18}{20}\selectfont
+            \node[align=center] (msin) at ($(current page.center)+(0.05cm,3.3cm)$){
+                \textcolor{frontgrey}{\imsexpandterm{msin}{\paperlanguage}}
+            };
+            }
+
+            % Program full name
+            {\fontsize{18}{20}\selectfont
+            \node[align=center] (programfullname) at ($(current page.center)+(0.05cm,2.05cm)$){
+                \textcolor{frontgrey}{\textbf{\paperprogramfullname}}
+            };
+            }
         }
 
         { \fontsize{17}{24}\selectfont
