@@ -2,3 +2,18 @@
 __pycache__/
 .DS_Store
 *.log
+
+# LaTeX build artifacts
+thesis/*.aux
+thesis/*.bbl
+thesis/*.blg
+thesis/*.lof
+thesis/*.lot
+thesis/*.toc
+thesis/*.run.xml
+thesis/*.pdf
+thesis/*-blx.bib
+thesis/*.out
+thesis/*.fls
+thesis/*.fdb_latexmk
+thesis/*.synctex.gz
