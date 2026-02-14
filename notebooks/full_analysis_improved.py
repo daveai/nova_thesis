@@ -7,7 +7,12 @@ traditional equity markets.
 """
 
 import os
+import random
 import warnings
+
+# Must be set before importing TensorFlow
+os.environ['PYTHONHASHSEED'] = '42'
+os.environ['TF_DETERMINISTIC_OPS'] = '1'
 
 import numpy as np
 import pandas as pd
@@ -28,6 +33,7 @@ from xgboost import XGBRegressor
 warnings.filterwarnings('ignore')
 
 # Reproducibility
+random.seed(42)
 np.random.seed(42)
 tf.random.set_seed(42)
 
@@ -438,7 +444,7 @@ def plot_model_comparison(all_results, save_path):
 
 def plot_crypto_vs_traditional(all_results, save_path):
     """Compare average performance: crypto vs S&P 500."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
     models = ['GARCH', 'EGARCH', 'RF', 'XGBoost', 'LSTM']
 
     # Cryptocurrency average (BTC + ETH)
