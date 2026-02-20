@@ -1,6 +1,6 @@
 \chapter{Methodology}
 
-This chapter describes the methodological framework: data sources, model specifications, and forecast evaluation procedures. The aim is to provide sufficient detail that the analysis could, in principle, be replicated.
+This chapter describes the methodology: data sources, model specifications, and evaluation procedures. The aim is to provide enough detail that the analysis could be replicated.
 
 \section{Data}
 
@@ -10,7 +10,7 @@ The analysis uses daily price data for four assets, selected to span both crypto
 
 \begin{itemize}
     \item \textbf{Bitcoin (BTC)}: The original and still the largest cryptocurrency by market cap. It is the obvious starting point for any crypto analysis.
-    \item \textbf{Ethereum (ETH)}: The second-largest cryptocurrency. Its inclusion permits assessment of whether Bitcoin results generalise within the crypto space.
+    \item \textbf{Ethereum (ETH)}: The second-largest cryptocurrency, but with a fundamentally different profile: its role as the primary platform for decentralised finance, its distinct protocol upgrade cycle, and its smart contract ecosystem all suggest potentially different volatility dynamics. Its inclusion permits assessment of whether Bitcoin results generalise within the crypto space.
     \item \textbf{S\&P 500 Index (SPX)}: The standard U.S. equity benchmark. It provides a well-behaved comparison case.
     \item \textbf{CBOE Volatility Index (VIX)}: Sometimes called the ``fear index.'' It measures implied volatility on S\&P 500 options and behaves quite differently from the underlying index.
 \end{itemize}
@@ -35,7 +35,7 @@ Realised volatility over a rolling window of $w$ days is defined as:
     \label{eq:rv}
 \end{equation}
 
-The 252 factor annualises the measure, assuming 252 trading days per year. This study uses $w = 21$ days (approximately one trading month) as the primary target, with 5-day and 10-day windows serving as additional features for the machine learning models.
+The 252 factor annualises the measure, assuming 252 trading days per year. The target variable is 5-day forward realised volatility (described in Section 3.3). The 21-day, 10-day, and 5-day rolling windows serve as features for the machine learning models.
 
 \subsection{Descriptive Statistics}
 
@@ -49,10 +49,10 @@ Table \ref{tab:descriptive} summarises the daily returns for each asset.
 \toprule
 Asset & Obs. & Mean (\%) & Std. (\%) & Skewness & Kurtosis & Ann. Vol. (\%) \\
 \midrule
-BTC & 2,557 & 0.10 & 3.38 & -0.58 & 9.12 & 53.7 \\
-ETH & 2,557 & 0.11 & 4.21 & -0.28 & 7.45 & 66.8 \\
-SPX & 1,759 & 0.05 & 1.15 & -0.85 & 14.38 & 18.3 \\
-VIX & 1,759 & 0.01 & 6.75 & 1.28 & 10.02 & 107.2 \\
+BTC & 2,556 & 0.10 & 3.38 & -0.58 & 9.12 & 53.7 \\
+ETH & 2,556 & 0.11 & 4.21 & -0.28 & 7.45 & 66.8 \\
+SPX & 1,758 & 0.05 & 1.15 & -0.85 & 14.38 & 18.3 \\
+VIX & 1,758 & 0.01 & 6.75 & 1.28 & 10.02 & 107.2 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -87,7 +87,7 @@ The Exponential GARCH model \parencite{nelson1991} works with the log of varianc
     \label{eq:egarch11}
 \end{equation}
 
-The $\gamma$ term is the key addition. If $\gamma$ is negative, bad news raises volatility more than good news of the same size, the leverage effect. This asymmetry is well documented in equity markets, though as noted earlier, it may run the other way in crypto.
+The $\gamma$ term is the key addition. If $\gamma$ is negative, bad news raises volatility more than good news of the same size, the leverage effect. This asymmetry is well documented in equity markets, though as noted earlier, it can run the other way in crypto.
 
 \subsection{Random Forest}
 
@@ -150,13 +150,13 @@ The machine learning models (Random Forest, XGBoost, LSTM) use the following fea
     \item Lagged volatility: $RV_{t-1}$ through $RV_{t-5}$
 \end{itemize}
 
-For LSTM, all features are standardised to have zero mean and unit variance. This helps with training stability.
+For LSTM, all features are standardised to have zero mean and unit variance, with the mean and standard deviation computed on the training set only and then applied unchanged to the test set. This prevents information leakage and helps with training stability.
 
 \section{Experimental Design}
 
 \subsection{Training and Testing}
 
-The analysis employs a straightforward out-of-sample framework. For each asset:
+The out-of-sample evaluation is straightforward. For each asset:
 
 \begin{enumerate}
     \item Split the data 80/20 into training and test periods.
@@ -164,7 +164,7 @@ The analysis employs a straightforward out-of-sample framework. For each asset:
     \item For ML models, train once on the training set and generate forecasts for the entire test period.
 \end{enumerate}
 
-This gives GARCH a potential advantage (it gets to update its parameters as new data arrives) while ML models are frozen after training. The tradeoff is that GARCH refitting is more computationally intensive.
+This constitutes a deliberate asymmetric validation strategy. The protocols differ because the models differ. GARCH estimation is lightweight: re-fitting a two-parameter variance equation on each new day of data takes fractions of a second. Deep learning retraining is not lightweight. In any realistic deployment, a practitioner would re-estimate GARCH daily and retrain a neural network far less frequently, if at all. The design therefore reflects operational reality rather than laboratory symmetry. If anything, it sets a higher bar for the ML models: they must perform well without the benefit of continuous adaptation.
 
 The target variable is 5-day forward realised volatility, consistent across all models.
 
@@ -178,7 +178,7 @@ Random seeds are fixed throughout:
     \item Scikit-learn models use fixed random states
 \end{itemize}
 
-This should, in principle, allow exact replication of the results.
+This allows exact replication of the results.
 
 \section{Evaluation Metrics}
 

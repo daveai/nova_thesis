@@ -1,10 +1,10 @@
 \chapter{Literature Review}
 
-This chapter surveys the current state of knowledge regarding volatility forecasting. It begins with the fundamentals: why volatility matters and what makes it difficult to predict. From there, it traces the development of GARCH-family models, which have dominated the field for decades, before turning to machine learning alternatives that have gained traction more recently. The chapter concludes by identifying gaps in the literature that this thesis aims to address.
+The literature on volatility forecasting spans four decades of econometric refinement and a more recent wave of machine learning applications. This chapter covers both traditions, ending with the gaps this thesis attempts to fill.
 
 \section{Volatility in Financial Markets}
 
-At its simplest, volatility is the standard deviation of returns. This apparent simplicity, however, can be misleading. Volatility sits at the heart of option pricing, risk management, and portfolio construction \parencite{hull2018}. Underestimating it may lead to excessive risk exposure; overestimating it can result in suboptimal capital allocation.
+At its simplest, volatility is the standard deviation of returns. This apparent simplicity, however, can be misleading. Volatility sits at the heart of option pricing, risk management, and portfolio construction \parencite{hull2018}. Underestimating it leads to excessive risk exposure; overestimating it results in suboptimal capital allocation.
 
 What makes volatility tricky to forecast is that it does not behave like a well-mannered statistical object. Returns cluster: calm periods follow calm periods, and turbulent stretches tend to persist \parencite{poon2003}. The distribution of returns is fat-tailed, meaning extreme moves happen more often than a normal distribution would suggest. And there is asymmetry: bad news tends to rattle markets more than good news of equivalent magnitude. These three stylised facts (clustering, fat tails, asymmetry) are well established. Any model worth using needs to accommodate them, at least to some degree.
 
@@ -45,7 +45,7 @@ The $\gamma$ parameter captures asymmetry. When $\gamma$ is negative, negative r
 
 GARCH models have endured for sound reasons. The parameters carry economic interpretation: shock persistence, news impact, and asymmetric responses can all be discussed in terms that make economic sense. Estimation is relatively efficient, and forecasts can be computed analytically \parencite{bollerslev1992}. For risk managers who must explain their models to regulators, this transparency is valuable.
 
-That said, GARCH is not without problems. The models impose a specific functional form on volatility dynamics, which may miss subtleties in the data. They are essentially linear in squared returns, so genuinely nonlinear patterns can slip through. And when markets undergo structural breaks (regulatory changes, financial crises, pandemics), GARCH models can be slow to adapt.
+That said, GARCH is not without problems. The models impose a specific functional form on volatility dynamics, which can miss subtleties in the data. They are essentially linear in squared returns, so genuinely nonlinear patterns can slip through. And when markets undergo structural breaks (regulatory changes, financial crises, pandemics), GARCH models can be slow to adapt.
 
 \section{Machine Learning Approaches}
 
@@ -53,7 +53,7 @@ That said, GARCH is not without problems. The models impose a specific functiona
 
 Random Forests, introduced by \textcite{breiman2001}, take a different approach. Rather than specifying a model in advance, they construct multiple decision trees from the data and average their predictions. For volatility forecasting, this typically involves training trees on lagged returns, past volatility, and other potentially relevant features.
 
-The appeal lies in their flexibility. Random Forests can potentially capture nonlinear relationships without requiring the analyst to specify the functional form. They tend to handle outliers reasonably well and provide built-in measures of feature importance. On the downside, the forecasts tend to be smoother than realised volatility; extreme spikes may be attenuated through averaging.
+The appeal lies in their flexibility. Random Forests can capture nonlinear relationships without requiring the analyst to specify the functional form. They tend to handle outliers reasonably well and provide built-in measures of feature importance. On the downside, the forecasts tend to be smoother than realised volatility; extreme spikes tend to be attenuated through averaging.
 
 \subsection{Gradient Boosting: XGBoost}
 
@@ -63,7 +63,7 @@ In volatility applications, XGBoost often does well. Some studies report R-squar
 
 \subsection{Long Short-Term Memory Networks}
 
-LSTMs \parencite{hochreiter1997} are a type of recurrent neural network designed to capture dependencies over long sequences. Their gating mechanisms let the network decide what information to remember and what to forget, which is useful for time series where patterns may persist over many periods.
+LSTMs \parencite{hochreiter1997} are a type of recurrent neural network designed to capture dependencies over long sequences. Their gating mechanisms let the network decide what information to remember and what to forget, which is useful for time series where patterns can persist over many periods.
 
 For volatility forecasting, LSTMs process sequences of past returns or realised volatility to generate predictions. They do not require explicit specification of lag structures; the network learns these from the data. \textcite{fischer2018} found that LSTMs could outperform other machine learning methods in financial applications, and \textcite{liu2019} reported similar results for equity index volatility, particularly during periods of market stress.
 
@@ -73,7 +73,7 @@ Whether LSTMs offer genuine improvements or have simply benefited from recent po
 
 Some researchers have tried combining the best of both worlds. \textcite{kim2018}, for instance, proposed feeding GARCH residuals into an LSTM, letting the econometric model handle the well-understood linear dynamics while the neural network picks up whatever remains.
 
-The logic is sensible: GARCH captures the basics, LSTM learns the rest. In practice, hybrid models sometimes outperform their components, but not always. The added complexity is only worthwhile if the performance gains are real and persistent.
+The logic is sensible: GARCH captures the basics, LSTM learns the rest. In practice, hybrid models sometimes outperform their components, but not always. The added complexity is only worthwhile if the performance gains are real and persistent. This study deliberately focuses on comparing pure econometric and pure machine learning approaches. Establishing how well each approach performs on its own is a necessary step before adding hybrid complexity on top.
 
 \section{Cryptocurrency Volatility}
 
@@ -87,7 +87,7 @@ Structural breaks are frequent. A tweet from a prominent figure, a regulatory cr
 
 Researchers have applied GARCH-family models to crypto with mixed success. \textcite{katsiampa2017} compared various specifications for Bitcoin and found that component GARCH models (which separate short-run and long-run volatility) fit best. This suggests that crypto volatility has both transient and persistent elements that need separate treatment.
 
-Interestingly, the asymmetry in crypto markets sometimes runs opposite to equities. Rather than negative returns boosting volatility, some studies find that positive returns do, perhaps reflecting speculative exuberance. The leverage effect, in other words, may not apply here in the usual way.
+Interestingly, the asymmetry in crypto markets sometimes runs opposite to equities. Rather than negative returns boosting volatility, some studies find that positive returns do, perhaps reflecting speculative exuberance. The leverage effect, in other words, might not hold in its usual form.
 
 \subsection{Machine Learning for Crypto Volatility}
 
@@ -101,7 +101,7 @@ Machine learning has attracted considerable attention in this space. \textcite{a
 
 The literature comparing GARCH and machine learning presents a somewhat inconsistent picture. \textcite{bucci2020} found that neural networks outperformed GARCH for realised volatility on equity indices, particularly during turbulent periods. However, \textcite{christensen2023} demonstrated that simpler methods (including ridge regression) could match or exceed deep learning performance in certain settings.
 
-\textcite{rahimikia2021} conducted a broader comparison and concluded that gradient boosting often performed well, though the best-performing model varied by asset and horizon. The emerging consensus appears to be that no universal best model exists. Context matters: GARCH may perform adequately in calm markets, while machine learning approaches might adapt better during regime transitions.
+\textcite{rahimikia2021} conducted a broader comparison and concluded that gradient boosting often performed well, though the best-performing model varied by asset and horizon. The emerging consensus appears to be that no universal best model exists. Context matters: GARCH performs adequately in calm markets, while machine learning approaches might adapt better during regime transitions.
 
 \subsection{Identified Research Gap}
 
