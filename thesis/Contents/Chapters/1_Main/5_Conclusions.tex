@@ -2,15 +2,15 @@
 
 \section{Summary of Findings}
 
-This thesis has examined the comparative performance of econometric and machine learning approaches to volatility forecasting across cryptocurrency and traditional financial assets. Using daily data from 2019 to 2025 for Bitcoin, Ethereum, the S\&P 500, and VIX, the analysis evaluated GARCH(1,1), EGARCH, Random Forest, XGBoost, and LSTM models through out-of-sample forecasting with Diebold-Mariano tests to assess statistical significance. Several findings emerge from this comparison.
+This thesis compared econometric and machine learning approaches to volatility forecasting across cryptocurrency and traditional assets, using daily data from 2019 to 2025 and Diebold-Mariano tests to distinguish real performance differences from noise. The results do not support any single model as universally better.
 
-The most notable finding concerns the S\&P 500, where the LSTM architecture achieves the strongest performance of any model tested. The RMSE of 0.1152 represents a 17 per cent improvement relative to GARCH(1,1), and this difference is statistically significant at the 1 per cent level. This result suggests that neural network approaches may capture temporal patterns in equity volatility that traditional econometric methods do not.
+For the S\&P 500, the headline result is negative: no machine learning method significantly improves on GARCH. LSTM performs worse than GARCH outright. Only EGARCH, which captures the leverage effect directly, achieves a statistically significant improvement (p<0.01). In mature equity markets, model structure matters more than model complexity.
 
-For Bitcoin, all machine learning methods significantly outperform GARCH(1,1), with XGBoost achieving the lowest RMSE (0.1848) and LSTM following closely (0.1854). The improvement of approximately 11 per cent relative to GARCH is statistically significant. For practitioners concerned with Bitcoin volatility, these findings suggest that machine learning approaches may offer measurable benefits.
+For Bitcoin, all machine learning methods significantly outperform GARCH(1,1), with XGBoost achieving the lowest RMSE (0.1848), Random Forest close behind (0.1855), and LSTM further at 0.1943. The improvement of approximately 11 per cent relative to GARCH is statistically significant. For practitioners concerned with Bitcoin volatility, these findings suggest that machine learning approaches offer measurable benefits.
 
 These findings do not generalise within the cryptocurrency asset class. For Ethereum, no machine learning method significantly improves upon GARCH, and EGARCH achieves the lowest errors. The divergence between Bitcoin and Ethereum results (machine learning methods significantly improving forecasts for one cryptocurrency but not the other) constitutes one of the more striking findings of this study.
 
-Model selection, these findings suggest, may need to proceed at the level of individual assets rather than asset categories. The temptation to generalise from one cryptocurrency to another, or to assume that methods ineffective for one asset will prove similarly ineffective for others, is not supported by the evidence presented here.
+Model selection, these findings suggest, needs to proceed at the level of individual assets rather than asset categories. The temptation to generalise from one cryptocurrency to another, or to assume that methods ineffective for one asset will prove similarly ineffective for others, is not supported by the evidence presented here.
 
 \section{Contributions}
 
@@ -21,19 +21,19 @@ This thesis makes several contributions to the volatility forecasting literature
 
     \item \textbf{Documentation of within-class variation}. The finding that machine learning methods significantly improve Bitcoin forecasts but not Ethereum forecasts challenges categorical assumptions about cryptocurrency volatility modelling. Performance appears to depend on asset-specific characteristics that do not align neatly with asset-class boundaries.
 
-    \item \textbf{Evidence for LSTM effectiveness in equity markets}. The LSTM architecture achieves a statistically significant 17 per cent RMSE reduction for the S\&P 500, suggesting that neural networks may capture patterns in mature equity markets that econometric methods do not. This finding could have implications for risk management practice.
+    \item \textbf{Evidence that model structure outperforms model complexity for equities}. For the S\&P 500, EGARCH is the only method to significantly outperform GARCH. Machine learning methods, including LSTM, do not add value over the asymmetric econometric specification. The leverage effect appears to be the dominant feature of equity volatility, and EGARCH captures it directly.
 
-    \item \textbf{Reproducible analysis framework}. The analysis employs fixed random seeds and documented procedures, permitting replication and extension.
+    \item \textbf{Reproducible analysis}. The analysis employs fixed random seeds and documented procedures, permitting replication and extension.
 \end{enumerate}
 
 \section{Limitations}
 
-Several limitations qualify the interpretation of these findings:
+The main limitations on interpretation are:
 
 \begin{enumerate}
     \item \textbf{LSTM architecture}. The neural network specification employed (two layers of 64 and 32 units with 30-day lookback) represents one of many possible configurations. Attention mechanisms, Transformer architectures, or alternative hyperparameter selections might yield different results. Whether architectural modifications would alter the Bitcoin-Ethereum divergence remains an open question.
 
-    \item \textbf{Training asymmetry}. GARCH models were re-estimated at each forecasting step, whilst machine learning models were trained once on the initial training set. This approach reflects typical deployment practice but may advantage econometric methods' capacity to adapt to recent market developments.
+    \item \textbf{Training asymmetry}. GARCH models were re-estimated at each forecasting step, whilst machine learning models were trained once on the initial training set. This approach reflects typical deployment practice but gives econometric methods more capacity to adapt to recent market developments.
 
     \item \textbf{Forecast horizon}. The analysis focuses exclusively on 5-day ahead volatility forecasts. Different horizons (shorter or longer) might favour different models. LSTM's capacity to capture extended temporal dependencies might prove more advantageous at longer forecast horizons.
 
@@ -44,38 +44,26 @@ Several limitations qualify the interpretation of these findings:
 
 \section{Implications for Practice}
 
-For practitioners, several observations merit consideration:
+A few points for practitioners:
 
 \begin{enumerate}
     \item \textbf{Asset-specific validation}. The divergence between Bitcoin and Ethereum results demonstrates that performance for one asset does not predict performance for another, even within the same asset class. Model selection should proceed through testing on each asset of interest rather than reliance on categorical assumptions.
 
-    \item \textbf{Statistical significance testing}. Some apparent improvements in RMSE do not achieve statistical significance under formal testing. Adoption of methods based solely on point estimates may lead to implementation of approaches that offer no genuine advantage.
+    \item \textbf{Statistical significance testing}. Some apparent improvements in RMSE do not achieve statistical significance under formal testing. Adopting methods based solely on point estimates risks implementing approaches that offer no genuine advantage.
 
-    \item \textbf{LSTM for equity markets}. The 17 per cent RMSE reduction achieved by LSTM for the S\&P 500 suggests that neural network approaches could offer meaningful benefits for equity volatility forecasting. The computational investment required for implementation may be justified by improved risk management outcomes.
+    \item \textbf{For equity markets, use EGARCH not LSTM}. EGARCH is the only method to significantly outperform GARCH for the S\&P 500. LSTM performs worse than GARCH outright. The computational investment in neural network implementation is not supported by the evidence for this asset class.
 
-    \item \textbf{Careful LSTM implementation}. Where neural network approaches are pursued, careful attention to architecture and configuration appears warranted. The lack of improvement for Ethereum suggests that implementations cannot be assumed to perform well across all applications.
+    \item \textbf{LSTM is worth testing for crypto, but validate per asset}. LSTM significantly outperforms GARCH for Bitcoin, but not for Ethereum. Deployment decisions should be based on per-asset validation, not on categorical assumptions.
 \end{enumerate}
 
 \section{Directions for Future Research}
 
-Several questions remain open for future investigation:
-
-\begin{enumerate}
-    \item \textbf{Alternative neural network architectures}. Transformer architectures and attention mechanisms have demonstrated strong performance in sequence modelling tasks in other domains. Whether such approaches would improve volatility forecasting, particularly for assets where LSTM performs poorly, warrants examination.
-
-    \item \textbf{Rolling machine learning estimation}. Periodic retraining of machine learning models would address the training asymmetry noted above. The computational cost would be substantial, but such an approach would permit fairer comparison with rolling GARCH estimation.
-
-    \item \textbf{Higher-frequency data}. Intraday data, with substantially richer temporal structure, might favour sequence models more consistently. The tradeoff involves data quality considerations and computational requirements.
-
-    \item \textbf{Hybrid approaches}. Combining econometric and machine learning methods (for instance, using GARCH forecasts as features or feeding GARCH residuals to neural networks) might permit exploitation of complementary strengths.
-
-    \item \textbf{Economic evaluation}. The present analysis focuses on statistical metrics. Whether forecast improvements translate to improved outcomes in trading, risk management, or options pricing applications represents the ultimate test of practical value.
-\end{enumerate}
+The clearest next step is testing more sophisticated neural network architectures. Transformers and attention mechanisms have shown strong results in sequence modelling elsewhere, and whether they improve on LSTM for assets where it currently falls short is a natural empirical question. Periodic retraining of machine learning models would also address the training asymmetry described above: updating models monthly or quarterly would allow fairer comparison with rolling GARCH estimation, at the cost of considerable computation. Intraday data might favour sequence models more consistently than daily frequency does, since the temporal structure available to the models would be richer. Hybrid approaches, such as using GARCH forecasts as features for machine learning models or feeding GARCH residuals into an LSTM, represent another avenue with some theoretical appeal. The most practically valuable extension, though, would translate the statistical improvements found here into economic terms: actual trading performance, option pricing accuracy, or risk management outcomes. That is ultimately what motivates volatility forecasting.
 
 \section{Concluding Remarks}
 
-The question of whether machine learning improves upon econometric methods for volatility forecasting does not admit a simple answer. For the S\&P 500, the evidence strongly supports an affirmative response: LSTM achieves a statistically significant 17 per cent reduction in forecast errors. For Bitcoin, all machine learning methods significantly outperform GARCH. For Ethereum, no machine learning method demonstrates significant improvement.
+Machine learning does not straightforwardly beat econometric methods for volatility forecasting. For Bitcoin, all machine learning methods significantly outperform GARCH. For the S\&P 500, none of them do, and LSTM is the worst-performing model. For Ethereum, the picture is similarly mixed. The findings point in different directions depending on the asset.
 
-These findings suggest that volatility dynamics may be more heterogeneous than is often assumed. Different assets, driven by different market participants operating with different information and objectives, appear to require different modelling approaches. The search for a single optimal method may prove less productive than the development of frameworks for matching models to assets through rigorous out-of-sample testing with appropriate statistical validation.
+These findings suggest that volatility dynamics are more heterogeneous than is often assumed. Different assets, driven by different market participants operating with different information and objectives, appear to require different modelling approaches. The search for a single optimal method is probably less productive than developing asset-specific approaches, selected through rigorous out-of-sample testing with appropriate statistical validation.
 
-What works, it appears, depends on the specific dynamics of each asset. The most reliable path to model selection remains empirical evaluation, with careful attention to statistical significance, conducted on an asset-by-asset basis.
+What works depends on the specific dynamics of each asset. The most reliable path to model selection remains empirical evaluation, with careful attention to statistical significance, conducted on an asset-by-asset basis.

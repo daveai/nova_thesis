@@ -1,20 +1,20 @@
 \chapter{Limitations and Future Work}
 
-This chapter acknowledges the principal constraints of the present study and identifies directions that future research might pursue to address them.
+No study covers everything. This chapter identifies the main constraints of the present analysis and points to where future work might pick up.
 
 \section{Methodological Limitations}
 
 \subsection{Neural Network Architecture}
 
-The LSTM specification employed in this study (two layers of 64 and 32 units, with a 30-day lookback window) represents one of numerous possible configurations. More sophisticated architectures might yield different results. Attention mechanisms, which permit the network to focus selectively on informative time steps, could potentially improve performance. Transformer architectures, which have achieved considerable success in natural language processing and other sequence modelling domains, represent another avenue that remains unexplored.
+The LSTM specification employed in this study (two layers of 64 and 32 units, with a 30-day lookback window) represents one of numerous possible configurations. More sophisticated architectures might yield different results. Attention mechanisms, which permit the network to focus selectively on informative time steps, could improve performance. Transformer architectures, which have achieved considerable success in natural language processing and other sequence modelling domains, represent another avenue that remains unexplored.
 
-Whether such modifications would alter the principal findings is uncertain. The strong LSTM performance for the S\&P 500 suggests that the basic architecture can be effective under appropriate conditions; the lack of improvement for Ethereum suggests that architectural considerations alone may not account for the observed divergence across assets.
+Whether more sophisticated architectures would change the core findings is unclear. LSTM performs well for Bitcoin but poorly for the S\&P 500 and Ethereum, suggesting the divergence reflects data characteristics rather than architectural limitations alone.
 
 \subsection{Training Asymmetry}
 
-GARCH models were re-estimated at each forecasting step, incorporating all available data up to the forecast origin. Machine learning models, by contrast, were trained once on the initial training set and subsequently held fixed. This asymmetry reflects typical deployment practice (the computational cost of daily neural network retraining would be substantial) but it may advantage the econometric models' capacity to adapt to recent market developments.
+GARCH models were re-estimated at each forecasting step, incorporating all available data up to the forecast origin. Machine learning models, by contrast, were trained once on the initial training set and subsequently held fixed. This asymmetry reflects typical deployment practice (the computational cost of daily neural network retraining would be substantial) but it gives econometric models more capacity to adapt to recent market developments.
 
-The question of whether periodic machine learning retraining would alter the comparative findings merits investigation. The strong LSTM performance for the S\&P 500 despite this asymmetry suggests that neural networks may capture patterns that benefit from longer training windows. Rolling machine learning estimation would entail considerable computational expense but would permit a more balanced comparison.
+The question of whether periodic machine learning retraining would alter the comparative findings is worth investigating, particularly for Bitcoin where ML methods show a consistent advantage. Rolling machine learning estimation would entail considerable computational expense but would permit a more balanced comparison.
 
 \subsection{Forecast Horizon}
 
@@ -22,9 +22,13 @@ The analysis focuses exclusively on 5-day ahead volatility forecasts. This horiz
 
 LSTM's capacity to capture extended temporal dependencies might prove more advantageous at longer forecast horizons, where GARCH's exponential decay of past information becomes more constraining. Conversely, shorter horizons might favour simpler specifications that adapt more rapidly to recent observations.
 
+\subsection{Hyperparameter Configuration}
+
+The machine learning models were deployed with standard, off-the-shelf configurations rather than extensively tuned hyperparameters. This was a deliberate choice: the goal was to assess how well these models perform in a realistic setting where a practitioner applies reasonable defaults. However, systematic hyperparameter optimisation (grid search, Bayesian optimisation, or similar) could alter the relative rankings. A well-tuned LSTM or XGBoost model might close the gap with GARCH in cases where it currently falls short, or widen it where ML already leads.
+
 \subsection{Feature Specification}
 
-The machine learning models employed only price-based features: lagged returns and realised volatility at various window lengths. This specification maintains comparability with GARCH, which also uses only price information, but may limit machine learning performance.
+The machine learning models employed only price-based features: lagged returns and realised volatility at various window lengths. This specification maintains comparability with GARCH, which also uses only price information, but likely limits machine learning performance.
 
 For cryptocurrency assets, on-chain metrics (transaction volume, active addresses, exchange flows) might carry predictive information that prices alone do not capture. Sentiment indicators derived from social media or news sources could provide additional signals. Options-implied volatility, where available, represents market expectations that might prove useful as features. None of these alternative information sources were incorporated in the present analysis.
 
@@ -40,19 +44,19 @@ The marked divergence between Bitcoin and Ethereum results might be period-speci
 
 The VIX differs fundamentally from the other assets examined. It already represents a volatility measure (specifically, the 30-day implied volatility of S\&P 500 options) rather than a price from which volatility is derived. Forecasting VIX volatility therefore involves predicting the volatility of volatility, a second-order quantity with distinct statistical properties.
 
-The VIX results should be interpreted with this distinction in mind. Direct comparison with the price-based assets may not be entirely appropriate, and the findings for VIX may not generalise to other applications.
+The VIX results should be interpreted with this distinction in mind. Direct comparison with the price-based assets may not be entirely appropriate, and the findings for VIX might not generalise to other applications.
 
 \subsection{Economic Significance}
 
 This thesis focuses on statistical metrics: RMSE, MAE, and Diebold-Mariano test statistics. These measures are informative but do not directly address economic significance. The ultimate question of practical interest is whether improved forecasts translate to improved decisions: more accurate option pricing, tighter risk bounds, superior trading performance.
 
-The 17 per cent RMSE improvement for the S\&P 500 is statistically significant, but whether it produces economically meaningful benefits remains unexamined. Backtesting of actual strategies, whilst beyond the scope of the present work, would be required to establish practical value.
+The 11 per cent RMSE improvement for Bitcoin is statistically significant, but whether it produces economically meaningful benefits remains unexamined. Backtesting of actual strategies, whilst beyond the scope of the present work, would be required to establish practical value.
 
 \section{Directions for Future Research}
 
 \subsection{Advanced Neural Network Architectures}
 
-Testing more sophisticated neural network designs represents a natural extension. Transformer architectures, which have demonstrated strong performance for sequence modelling in other domains, are an obvious candidate. Attention mechanisms could help models focus on the most informative historical observations. Whether such approaches would improve performance for assets where LSTM currently offers no advantage warrants investigation.
+The most obvious next step is testing more sophisticated neural network designs. Transformer architectures, which have shown strong performance for sequence modelling in other domains, are a reasonable first candidate. Attention mechanisms could help models focus on the most informative historical observations. Whether such approaches would improve performance for assets where LSTM currently offers no advantage is a natural empirical question.
 
 \subsection{Rolling Machine Learning Estimation}
 
@@ -72,10 +76,10 @@ Such hybrids might combine the interpretability of GARCH with the flexibility of
 
 \subsection{Additional Assets}
 
-The four assets examined in this study are not exhaustive. Other cryptocurrencies (such as Solana, Cardano, or stablecoins), other equity indices (FTSE 100, DAX, Nikkei 225), commodities (gold, oil), and fixed income instruments would all warrant testing. The strong LSTM performance for the S\&P 500 but not for Ethereum suggests that asset-specific effects are substantial; examination of additional assets would help characterise the conditions under which neural network approaches are likely to provide benefits.
+The four assets examined in this study are not exhaustive. Other cryptocurrencies (such as Solana, Cardano, or stablecoins), other equity indices (FTSE 100, DAX, Nikkei 225), commodities (gold, oil), and fixed income instruments would all warrant testing. The strong ML performance for Bitcoin but not for Ethereum suggests that asset-specific effects are substantial; examination of additional assets would help characterise the conditions under which machine learning approaches are likely to provide benefits.
 
 \subsection{Economic Evaluation}
 
-The most valuable extension would translate forecasting improvements into economic terms. This would involve backtesting trading strategies, evaluating option pricing accuracy, or assessing risk management performance. If a model reduces RMSE by 17 per cent but does not improve realised returns or risk-adjusted performance, the practical significance of the improvement may be limited.
+The most valuable extension would translate forecasting improvements into economic terms. This would involve backtesting trading strategies, evaluating option pricing accuracy, or assessing risk management performance. If an 11 per cent RMSE reduction for Bitcoin does not improve realised returns or risk-adjusted performance, the practical significance of the improvement might be limited.
 
-Such evaluation would connect the statistical findings of this thesis to the practical concerns that motivate volatility forecasting in the first instance.
+Such evaluation would connect the statistical findings here to what actually motivates volatility forecasting: making better decisions.
